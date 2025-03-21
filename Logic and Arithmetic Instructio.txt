@@ -1,0 +1,79 @@
+section .data
+    msg1 db "Enter first number: ", 0
+    msg2 db "Enter second number: ", 0
+    fmt_in db "%d", 0
+    fmt_out db "Addition: %d", 10, "Subtraction: %d", 10, "Multiplication: %d", 10, "Division: %d", 10, 0
+
+
+section .bss
+    num1 resb 4
+    num2 resb 4
+
+section .text
+    global main
+    extern printf, scanf
+
+main:
+    push rbp
+    mov rbp, rsp
+
+    ; Prompt for first number
+    mov rdi, msg1
+    call printf
+
+    ; Read first number
+    mov rdi, fmt_in
+    mov rsi, num1
+    call scanf
+
+    ; Prompt for second number
+    mov rdi, msg2
+    call printf
+
+    ; Read second number
+    mov rdi, fmt_in
+    mov rsi, num2
+    call scanf
+
+; Load numbers into registers
+    mov eax, [num1]  ; Load first number
+    mov ebx, [num2]  ; Load second number
+
+    ; Perform Addition
+    add eax, ebx     ; eax = num1 + num2
+    push rax         ; Store result on stack
+
+    ; Perform Subtraction
+    mov eax, [num1]  
+    sub eax, ebx     ; eax = num1 - num2
+    push rax
+
+    ; Perform Multiplication
+    mov eax, [num1]
+    imul eax, ebx    ; eax = num1 * num2
+    push rax
+
+    ; Perform Division
+    mov eax, [num1]
+    cdq              ; Sign extend for division
+    idiv ebx         ; eax = num1 / num2
+    push rax
+
+; Print results
+    mov rdi, fmt_out
+
+    pop r8           ; Addition result
+    pop rcx          ; Subtraction result
+    pop rdx          ; Multiplication result
+    pop rsi          ; Division result
+    call printf
+
+
+    ; Exit program
+    mov rsp, rbp
+    pop rbp
+    mov rax, 60
+    xor rdi, rdi
+    syscall 
+
+section .note.GNU-stack noalloc noexec nowrite
